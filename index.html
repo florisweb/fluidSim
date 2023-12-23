@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			body {
+				position: fixed;
+				height: 100vh;
+				width: 100vw;
+				overflow: hidden;
+				font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+			}
+
+			body.dragTool * {
+				cursor: pointer;
+			}
+			body.cutTool * {
+				cursor: alias;
+			}
+			
+			* {
+				box-sizing: border-box;
+			}
+
+			#worldCanvas {
+				position: fixed;
+				left: 0;
+				top: 0;
+				
+				width: 100vw;
+				height: 100vh;
+				background: rgb(255, 250, 245);
+			}
+
+			.panel {
+				position: relative;
+				z-index: 100;
+				background: #fff;
+				box-shadow: 5px 5px 20px 10px rgba(0, 0, 0, .04);
+				border-radius: 5px;
+
+				padding: 20px;
+				margin: 10px;
+			}
+
+			#settingsPanel.panel {
+				position: relative;
+				float:  right;
+				top: 0px;
+				right: 10px;
+				width: 250px;
+			}
+			#settingsPanel.panel #simulationSpeed {
+				margin-top: 5px;
+				width: 100%;
+			}
+
+
+			
+
+
+			#toolPanel.panel {
+				position: relative;
+				float:  left;
+				display: flex;
+				width:  115px;
+				padding:  5px 10px;
+				padding-left: 5px;
+			}
+			#toolPanel.panel .option {
+				padding:  5px 10px;
+				height: 30px;
+
+				line-height: 20px;
+				margin-left:  5px;
+				
+				border-radius: 5px;
+				border:  1px solid #eee;
+				
+				transition: all .2s;
+			}
+			#toolPanel.panel .option.selected {
+				border:  1px solid #ccc;
+				background: rgba(0, 0, 0, .08);
+			}
+
+		</style>
+		<title>SpringFabricSim</title>
+	</head>
+	<body class='dragTool'>
+		<div class='panel' id='toolPanel'>
+			<div class='option selected' onclick='UI.toolPanel.selectTool("drag", this)'>
+				&#128001;
+			</div>
+			<div class='option' onclick='UI.toolPanel.selectTool("cut", this)'>
+				Cut
+			</div>
+		</div>
+
+		<div class='panel' id='settingsPanel'>
+			<label for="simulationSpeed" id='simulationSpeedLabel'>Simulation Speed (1)</label><br>
+			<input type='range' min='0' max='1' step=".01" id='simulationSpeed' value='.17'>
+			<br>
+			<br>
+			<input type='checkbox' id='stringRaptureEnabled' onclick="Simulation.settings.enableSpringBreaking = this.checked">
+			<label for="stringRaptureEnabled">Allow string rapture</label><br>
+			<input type='checkbox' id='showForcesEnabled' onclick="Renderer.settings.drawForces = this.checked">
+			<label for="showForcesEnabled">Show forces</label><br>
+		</div>
+		<canvas id="worldCanvas" width="600" height="600"></canvas>
+
+		<script type="text/javascript" src="js/vector.js"></script>
+		<script type="text/javascript" src="js/renderer.js"></script>
+		<script type="text/javascript" src="js/UI.js"></script>
+		<script type="text/javascript" src="js/physics.js"></script>
+		<script type="text/javascript" src="js/particle.js"></script>
+		<script type="text/javascript" src="js/world.js"></script>
+
+
+	</body>
+</html>
