@@ -34,12 +34,14 @@ class _Renderer
 	#drawParticle(_particle) {
 		const pxRadius = _particle.radius * this.camera.getPxToWorldScalar();
 		let pos = this.camera.worldToPxCoord(_particle.position);
-		// console.log('drawParticle', pos.value);
 		this.ctx.fillStyle = '#555';
 		this.ctx.beginPath();
-		this.ctx.circle(pos.value[0] - pxRadius, pos.value[1] - pxRadius, pxRadius);
+		this.ctx.circle(pos.value[0], pos.value[1], pxRadius);
 		this.ctx.closePath();
 		this.ctx.fill();
+
+
+		this.drawVector({start: _particle.position, delta: _particle.velocity, color: '#f00'});
 	}
 
 	drawVector({start, delta, color = '#f00'}) {
