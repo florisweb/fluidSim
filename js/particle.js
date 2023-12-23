@@ -1,16 +1,24 @@
 class PhysicsEntity {
 	position = new Vector(0, 0);
-	velocity = new Vector(10 - Math.random() * 2 * 10, 10 - Math.random() * 2 * 10);
+	prevPos = new Vector(0, 0);
+	// velocity = new Vector(10 - Math.random() * 2 * 10, 10 - Math.random() * 2 * 10);
+	velocity = new Vector(0, 0);
 
 	constructor({position}) {
 		this.position = position || new Vector(Math.random() * World.size.value[0], Math.random() * World.size.value[1]);
 	}
 
 	update(_dt) {
-		// let acceleration = this.nettoForce.scale(1 / this.mass);
-		// this.nettoForce = new Vector(0, 0);
-		// this.velocity.add(acceleration.copy().scale(_dt));
+		let acceleration = this.nettoForce.scale(1 / this.mass);
+		this.nettoForce = new Vector(0, 0);
+		this.velocity.add(acceleration.scale(_dt));
+		this.prevPos = this.position.copy();
 		this.position.add(this.velocity.copy().scale(_dt));
+		if (isNaN(this.position.value[0])) {
+			console.log(_dt);
+			debugger;
+		}
+
 
 		if (this.position.value[0] > World.size.value[0]) 
 		{
@@ -51,7 +59,7 @@ class Particle extends PhysicsEntity {
 	}
 
 	update(_dt) {
-		// this.applyForce(new Vector(0, Physics.g * this.mass));
+		this.applyForce(new Vector(0, Physics.g * this.mass));
 		super.update(_dt);
 	}
 }

@@ -3,6 +3,9 @@
 
 class _Renderer
 {
+	settings = {
+		showForces: false
+	}
 	canvas;
 	ctx;
 	camera;
@@ -40,7 +43,7 @@ class _Renderer
 		this.ctx.closePath();
 		this.ctx.fill();
 
-
+		if (!this.settings.showForces) return;
 		this.drawVector({start: _particle.position, delta: _particle.velocity, color: '#f00'});
 	}
 

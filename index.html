@@ -100,10 +100,10 @@
 			<label for="simulationSpeed" id='simulationSpeedLabel'>Simulation Speed (1)</label><br>
 			<input type='range' min='0' max='1' step=".01" id='simulationSpeed' value='.17'>
 			<br>
+
+			<label id='energyLabel'>Energy:</label><br>
 			<br>
-			<input type='checkbox' id='stringRaptureEnabled' onclick="Simulation.settings.enableSpringBreaking = this.checked">
-			<label for="stringRaptureEnabled">Allow string rapture</label><br>
-			<input type='checkbox' id='showForcesEnabled' onclick="Renderer.settings.drawForces = this.checked">
+			<input type='checkbox' id='showForcesEnabled' onclick="Renderer.settings.showForces = this.checked">
 			<label for="showForcesEnabled">Show forces</label><br>
 		</div>
 		<canvas id="worldCanvas" width="600" height="600"></canvas>
