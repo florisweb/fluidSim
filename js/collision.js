@@ -2,11 +2,18 @@
 
 class _CollisionDetector {
 
-	constructor() {
-
+	resolveCollisions(_dt) {
+		for (let x = 0; x < World.grid.length; x++) 
+		{
+			for (let y = 0; y < World.grid[x].length; y++) 
+			{
+				let particles = World.grid.getParticlesByXY(x, y);
+				if (particles.length < 2) continue;
+				this.resolveCollisionSet(particles, _dt);
+			}
+		}
 	}
-
-	resolveCollisions(_particles, _dt) {
+	resolveCollisionSet(_particles, _dt) {
 		for (let p1 = 0; p1 < _particles.length; p1++) 
 		{
 			for (let p2 = p1 + 1; p2 < _particles.length; p2++) 

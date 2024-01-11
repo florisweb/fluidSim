@@ -76,7 +76,11 @@ function _Renderer_camera(_canvas) {
 		PxToWorld = _canvas.width / World.size.value[0];
 		WorldToPx = 1 / PxToWorld;
 		World.size.value[1] = WorldToPx * _canvas.height;
+
+		World.grid = new WorldGrid();
 	}
+
+
 
 	this.getPxToWorldScalar = function() {
 		return PxToWorld;
