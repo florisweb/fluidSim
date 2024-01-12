@@ -1,6 +1,8 @@
 const Renderer = new _Renderer(worldCanvas);
 const UI = new _UI();
 
+
+const timers = [0, 0, 0, 0];
 const World = new class {
 	size = new Vector(500, 500);
 	speed = 1;
@@ -27,18 +29,21 @@ const World = new class {
 
 	#prevUpdate = new Date();
 	update() {
-		let dt = Math.min((new Date() - this.#prevUpdate) / 1000 * this.speed, .1);
+		let start = new Date();
+
+		// let dt = Math.min((new Date() - this.#prevUpdate) / 1000 * this.speed, .1);
+		let dt = 0.005;
 
 		this.#prevUpdate = new Date();
+		// this.collisionDetector.resolveCollisions(dt); // [34499, 267, 85, 0] = [98.99, 0.77, 0.24]
+		this.collisionDetector.resolveCollisionSet(this.particles, dt); // [26264, 261, 102, 0]
 
-		// this.collisionDetector.resolveCollisions(dt);
-		this.collisionDetector.resolveCollisionSet(this.particles, dt);
+		timers[0] += new Date() - start; start = new Date();
 		for (let particle of this.particles)
 		{
 			particle.update(dt);
 		}
-
-		setTimeout(() => this.update(), 5);
+		timers[1] += new Date() - start; start = new Date();
 
 		let totalEnergy = this.totalEnergy;
 		let base = Math.floor(Math.min(Math.log10(totalEnergy) - 2, 12) / 3) * 3;
@@ -48,14 +53,17 @@ const World = new class {
 
 		energyLabel.innerHTML = 'Energy: ' + value + units[base / 3] + 'J';
 
-		// this.grid.assignParticles(this.particles);
+		this.grid.assignParticles(this.particles);
+		timers[2] += new Date() - start;
+
+		setTimeout(() => this.update(), 5);
 	}
 }
 
 
 function WorldGrid() {
 	let grid = [];
-	const gridSize = 10;
+	const gridSize = 50;
 	for (let x = 0; x < World.size.value[0] / gridSize; x++)
 	{
 		grid[x] = [];
@@ -84,6 +92,7 @@ function WorldGrid() {
 		}
 	}
 	grid.getParticlesByXY = function(x, y) {
+		// return this[x][y];
 		let squares = [
 			[x - 1, y - 1], [x, y - 1], [x + 1, y - 1], 
 			[x - 1, y], [x + 1, y],
@@ -107,16 +116,14 @@ function WorldGrid() {
 	return grid;
 }
 
-// World.particles.push(new Particle({position: new Vector(50, 70.2), radius: 5}));
-// World.particles.push(new Particle({position: new Vector(100, 70), radius: 20}));
-// World.particles[0].velocity = new Vector(0, 0);
-// World.particles[1].velocity = new Vector(-30, 0);
+// World.particles.push(new Particle({position: new Vector(50, 170), radius: 5}));
+// World.particles.push(new Particle({position: new Vector(100, 170), radius: 20}));
 
-for (let x = 0; x < World.size.value[0]; x += 10) 
+for (let x = 0; x < World.size.value[0]; x += 50) 
 {
-	for (let y = 0; y < 300; y += 20) 
+	for (let y = 0; y < 100; y += 50) 
 	{
-		World.particles.push(new Particle({position: new Vector(x, y), radius: 1}));
+		World.particles.push(new Particle({position: new Vector(x, y), radius: 2 }));
 	}
 }
 

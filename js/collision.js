@@ -3,15 +3,31 @@
 class _CollisionDetector {
 
 	resolveCollisions(_dt) {
-		for (let x = 0; x < World.grid.length; x++) 
+		let curUpdate = Math.random() * 1000000;
+		let checked = 0;
+		let resolveals = 0;
+		for (let particle of World.particles)
 		{
-			for (let y = 0; y < World.grid[x].length; y++) 
-			{
-				let particles = World.grid.getParticlesByXY(x, y);
-				if (particles.length < 2) continue;
-				this.resolveCollisionSet(particles, _dt);
-			}
+			if (particle.lastUpdate === curUpdate) continue;
+			checked++;
+			let xy = World.grid.posToXY(particle.position);
+			let particles = World.grid.getParticlesByXY(xy.value[0], xy.value[1]);
+			if (particles.length < 2) continue;
+			resolveals += particles.length;
+			this.resolveCollisionSet(particles, _dt);
+			for (let p of particles) p.lastUpdate = curUpdate;
 		}
+		// console.log(checked / World.particles.length, resolveals / World.particles.length);
+
+		// for (let x = 0; x < World.grid.length; x++) 
+		// {
+		// 	for (let y = 0; y < World.grid[x].length; y++) 
+		// 	{
+		// 		let particles = World.grid.getParticlesByXY(x, y);
+		// 		if (particles.length < 2) continue;
+		// 		this.resolveCollisionSet(particles, _dt);
+		// 	}
+		// }
 	}
 	resolveCollisionSet(_particles, _dt) {
 		for (let p1 = 0; p1 < _particles.length; p1++) 

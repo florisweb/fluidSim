@@ -1,41 +1,53 @@
 class PhysicsEntity {
 	position = new Vector(0, 0);
-	prevPos = new Vector(0, 0);
+	prevDeltaPos = new Vector(0, 0);
+	lastDt = 1;
 	// velocity = new Vector(10 - Math.random() * 2 * 10, 10 - Math.random() * 2 * 10);
-	velocity = new Vector(0, 0);
+	// velocity = new Vector(0, 0);
+
+	get velocity() {
+		return this.prevDeltaPos.copy().scale(1 / this.lastDt);
+	}
 
 	constructor({position}) {
 		this.position = position || new Vector(Math.random() * World.size.value[0], Math.random() * World.size.value[1]);
 	}
 
+
+
 	update(_dt) {
+		this.lastDt = _dt;
 		let acceleration = this.nettoForce.scale(1 / this.mass);
 		this.nettoForce = new Vector(0, 0);
-		this.velocity.add(acceleration.scale(_dt));
-		this.prevPos = this.position.copy();
-		this.position.add(this.velocity.copy().scale(_dt));
-		if (isNaN(this.position.value[0])) {
-			console.log(_dt);
-			debugger;
-		}
 
+ 
+		let deltaPos = this.prevDeltaPos.copy().add(acceleration.scale(_dt**2));
+		this.prevDeltaPos = deltaPos.copy();
+		this.position.add(deltaPos);
 
+		if (isNaN(this.position.value[0])) debugger;
+		
+		// Check for te worlds boundaries
 		if (this.position.value[0] > World.size.value[0]) 
 		{
-			this.velocity.value = [-Math.abs(this.velocity.value[0]) * Physics.restitution, this.velocity.value[1]];
+			let antiVelocityForce = -Math.abs(this.velocity.value[0]) * this.mass / _dt;
+			this.applyForce(new Vector(antiVelocityForce * (1 + Physics.restitution), 0));
 			this.position.value[0] = World.size.value[0];
 		} else if (this.position.value[0] < 0) 
 		{
-			this.velocity.value = [Math.abs(this.velocity.value[0]) * Physics.restitution, this.velocity.value[1]];
+			let antiVelocityForce = Math.abs(this.velocity.value[0]) * this.mass / _dt;
+			this.applyForce(new Vector(antiVelocityForce * (1 + Physics.restitution), 0));
 			this.position.value[0] = 0;
 		}
 		if (this.position.value[1] > World.size.value[1]) 
 		{
-			this.velocity.value = [this.velocity.value[0], -Math.abs(this.velocity.value[1]) * Physics.restitution];
+			let antiVelocityForce = -Math.abs(this.velocity.value[1]) * this.mass / _dt;
+			this.applyForce(new Vector(0, antiVelocityForce * (1 + Physics.restitution)));
 			this.position.value[1] = World.size.value[1];
 		} else if (this.position.value[1] < 0) 
 		{
-			this.velocity.value = [this.velocity.value[0], Math.abs(this.velocity.value[1]) * Physics.restitution];
+			let antiVelocityForce = Math.abs(this.velocity.value[1]) * this.mass / _dt;
+			this.applyForce(new Vector(0, antiVelocityForce * (1 + Physics.restitution)));
 			this.position.value[1] = 0;
 		}
 	}
