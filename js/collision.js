@@ -29,6 +29,41 @@ class _CollisionDetector {
 		// 	}
 		// }
 	}
+
+	resolveNeighbourCollisions(_dt) {
+		for (let particle of World.particles) particle.resolved = false;
+
+		for (let particle of World.particles)
+		{
+			for (let other of particle.neighbours)
+			{
+				if (other.resolved) continue;
+				this.resolveCollision(particle, other, _dt);
+				other.neighbours.find((p) => p === particle).resolved = true;
+			}
+		}
+	}
+
+
+	updateNeighbourTable(_rangeSquared) {
+		for (let particle of World.particles) particle.neighbours = [];
+
+		for (let p1 = 0; p1 < World.particles.length; p1++) 
+		{
+			for (let p2 = p1 + 1; p2 < World.particles.length; p2++) 
+			{
+				let particle1 = World.particles[p1];
+				let particle2 = World.particles[p2];
+				let delta = particle1.position.difference(particle2.position);
+				let distanceSq = delta.getSquaredLength();
+				if (distanceSq > _rangeSquared) continue;
+				particle1.neighbours.push(particle2);
+				particle2.neighbours.push(particle1);
+			}
+		}
+	}
+
+
 	resolveCollisionSet(_particles, _dt) {
 		for (let p1 = 0; p1 < _particles.length; p1++) 
 		{
@@ -36,41 +71,40 @@ class _CollisionDetector {
 			{
 				let particle1 = _particles[p1];
 				let particle2 = _particles[p2];
-				let dPos = particle1.position.difference(particle2.position);
-				let length = dPos.getLength();
-				if (length === 0) {
-					const errorMargin = 0.01;
-					dPos = new Vector(errorMargin - 2 * errorMargin * Math.random(), errorMargin - 2 * errorMargin * Math.random());
-					length = dPos.getLength();
-				}
-				
-
-				let deltaLength = particle1.radius + particle2.radius - length;
-				if (deltaLength < 0) continue;
-
-				let normalVector = dPos.copy();//.scale(1 / length);
-				let projA = normalVector.getProjection(particle1.velocity);
-				let projB = normalVector.getProjection(particle2.velocity);
-
-				const mTot = particle1.mass + particle2.mass;
-				let velocityA = projA.copy().scale((particle1.mass - particle2.mass) / mTot).add(projB.copy().scale(particle2.mass * 2 / mTot));
-				let velocityB = projB.copy().scale((particle2.mass - particle1.mass) / mTot).add(projA.copy().scale(particle1.mass * 2 / mTot));
-
-				let forceA = projA.difference(velocityA).scale(particle1.mass / _dt);
-				let forceB = projB.difference(velocityB).scale(particle2.mass / _dt);
-				if (isNaN(forceA.value[0])) debugger;
-				if (isNaN(forceB.value[0])) debugger;
-				particle1.applyForce(forceA);
-				particle2.applyForce(forceB);
-
-				let displacement = dPos.copy().scale(1 / length * deltaLength)
-				particle1.position.add(displacement.copy().scale(-particle2.mass / mTot));
-				particle2.position.add(displacement.copy().scale(particle1.mass / mTot));
-
-
-				// Renderer.drawVector({start: particle1.position, delta: projA.copy().scale(1), color: '#00f'});
-				// Renderer.drawVector({start: particle2.position, delta: projB.copy().scale(1), color: '#0f0'});
+				this.resolveCollision(particle1, particle2);
 			}
 		}
+	}
+
+	resolveCollision(_particle1, _particle2, _dt) {
+		let dPos = _particle1.position.difference(_particle2.position);
+		let length = dPos.getLength();
+		if (length === 0) {
+			const errorMargin = 0.01;
+			dPos = new Vector(errorMargin - 2 * errorMargin * Math.random(), errorMargin - 2 * errorMargin * Math.random());
+			length = dPos.getLength();
+		}
+		
+		let deltaLength = _particle1.radius + _particle2.radius - length;
+		if (deltaLength < 0) return;
+
+		let normalVector = dPos.copy();
+		let projA = normalVector.getProjection(_particle1.velocity);
+		let projB = normalVector.getProjection(_particle2.velocity);
+
+		const mTot = _particle1.mass + _particle2.mass;
+		let velocityA = projA.copy().scale((_particle1.mass - _particle2.mass) / mTot).add(projB.copy().scale(_particle2.mass * 2 / mTot));
+		let velocityB = projB.copy().scale((_particle2.mass - _particle1.mass) / mTot).add(projA.copy().scale(_particle1.mass * 2 / mTot));
+
+		let forceA = projA.difference(velocityA).scale(_particle1.mass / _dt);
+		let forceB = projB.difference(velocityB).scale(_particle2.mass / _dt);
+		if (isNaN(forceA.value[0])) debugger;
+		if (isNaN(forceB.value[0])) debugger;
+		_particle1.applyForce(forceA);
+		_particle2.applyForce(forceB);
+
+		let displacement = dPos.copy().scale(1 / length * deltaLength)
+		_particle1.position.add(displacement.copy().scale(-_particle2.mass / mTot));
+		_particle2.position.add(displacement.copy().scale(_particle1.mass / mTot));
 	}
 }

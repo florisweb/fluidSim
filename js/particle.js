@@ -2,6 +2,9 @@ class PhysicsEntity {
 	position = new Vector(0, 0);
 	prevDeltaPos = new Vector(0, 0);
 	lastDt = 1;
+
+
+	neighbours = [];
 	// velocity = new Vector(10 - Math.random() * 2 * 10, 10 - Math.random() * 2 * 10);
 	// velocity = new Vector(0, 0);
 

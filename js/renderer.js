@@ -37,7 +37,10 @@ class _Renderer
 	#drawParticle(_particle) {
 		const pxRadius = _particle.radius * this.camera.getPxToWorldScalar();
 		let pos = this.camera.worldToPxCoord(_particle.position);
-		this.ctx.fillStyle = '#555';
+		// this.ctx.fillStyle = '#555';
+		let log = Math.log(_particle.velocity.getSquaredLength());
+		this.ctx.fillStyle = 'rgb(' + (log * 15) + ', ' + (255 - log * 15) + ', ' + (_particle.radius / 4 * 255) + ')';
+
 		this.ctx.beginPath();
 		this.ctx.circle(pos.value[0], pos.value[1], pxRadius);
 		this.ctx.closePath();
@@ -77,7 +80,7 @@ function _Renderer_camera(_canvas) {
 		WorldToPx = 1 / PxToWorld;
 		World.size.value[1] = WorldToPx * _canvas.height;
 
-		World.grid = new WorldGrid();
+		// World.grid = new WorldGrid();
 	}
 
 
