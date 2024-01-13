@@ -37,11 +37,35 @@ class _Renderer
 		let bottomRight = this.camera.worldToPxCoord(_system.size, _system);
 		let delta = topLeft.difference(bottomRight);
 
-		this.ctx.strokeStyle = '#f00';
+		this.ctx.strokeStyle = '#ccc';
+		this.ctx.fillStyle = '#fff';
 		this.ctx.beginPath();
-		this.ctx.strokeRect(topLeft.value[0], topLeft.value[1], delta.value[0], delta.value[1]);
+		this.ctx.rect(topLeft.value[0], topLeft.value[1], delta.value[0], delta.value[1]);
 		this.ctx.closePath();
 		this.ctx.stroke();
+		this.ctx.fill();
+
+
+		let topTextPos = topLeft.add(new Vector(delta.value[0] / 2, 0));
+		this.ctx.fillStyle = '#777';
+		this.ctx.font = "15px Arial";
+		this.ctx.textBaseline = 'bottom';
+		this.ctx.textAlign = 'center';
+		this.ctx.beginPath();
+		this.ctx.fillText('< ' + _system.name + ' >', topTextPos.value[0], topTextPos.value[1] - 5);
+		this.ctx.closePath();
+		this.ctx.fill();
+
+		let bottomTextPos = topTextPos.add(new Vector(1, delta.value[1]));
+		this.ctx.fillStyle = '#aaa';
+		this.ctx.font = "13px Arial";
+		this.ctx.textBaseline = 'top';
+		this.ctx.textAlign = 'center';
+		this.ctx.beginPath();
+		this.ctx.fillText('Area: ' + _system.size.value[0] * _system.size.value[1] + 'm^2', bottomTextPos.value[0], bottomTextPos.value[1] + 5);
+		this.ctx.closePath();
+		this.ctx.fill();
+
 
 		for (let particle of _system.particles) this.#drawParticle(particle, _system);
 	}
@@ -108,7 +132,7 @@ class _Renderer_camera {
 
 		World.systems[0].position = World.size.copy().add(World.systems[0].size.copy().scale(-1)).scale(.5);
 		World.systems[0].position.value[0] = 10;
-		World.systems[1].position = World.systems[0].position.copy().add(new Vector(110, 0));
+		// World.systems[1].position = World.systems[0].position.copy().add(new Vector(110, 0));
 	}
 
 	getPxToWorldScalar() {

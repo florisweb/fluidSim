@@ -1,6 +1,7 @@
 
 
 class System {
+	name;
 	size = new Vector(500, 500);
 	position = new Vector(0, 0);
 
@@ -23,8 +24,9 @@ class System {
 		this.particles.push(_particle);
 	}
 
-	constructor({size}) {
+	constructor({size, name}) {
 		this.size = size;
+		this.name = name || 'Unnamed system';
 	}
 
 
@@ -52,19 +54,21 @@ class System {
 		CollisionDetector.resolveNeighbourCollisions(this, dt);
 		for (let particle of this.particles) particle.update(dt);
 
+		
+		if (this.running) setTimeout(() => this.update(), 5);		
+		if (this.updates % 10 !== 0) return;
+		CollisionDetector.updateNeighbourTable(this, this.#updateNeighbourRange**2);
+		this.updateMetaData();
+	}
 
-		let totalEnergy = this.totalEnergy;
+	updateMetaData() {
+		let totalEnergy = this.totalEkin / this.particles.length;
 		let base = Math.floor(Math.min(Math.log10(totalEnergy) - 2, 12) / 3) * 3;
 		const units = ['', 'k', 'M', 'G', 'T'];
 		let value = Math.round(totalEnergy / 10**base);
 
 
-		energyLabel.innerHTML = 'Energy: ' + value + units[base / 3] + 'J<br>' + this.averageVelocity + 'm/s';
-
-		
-		if (this.running) setTimeout(() => this.update(), 5);		
-		if (this.updates % 10 !== 0) return;
-		CollisionDetector.updateNeighbourTable(this, this.#updateNeighbourRange**2);
+		energyLabel.innerHTML = 'Average Ekin: ' + value + units[base / 3] + 'J<br>' + Math.round(this.averageVelocity * 100) / 100 + 'm/s';
 	}
 }
 
