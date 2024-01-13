@@ -28,15 +28,30 @@ class _Renderer
 
 	render() {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-		for (let particle of World.particles) this.#drawParticle(particle);
-
+		for (let system of World.systems) this.renderSystem(system);
 		requestAnimationFrame(() => this.render());
 	}
 
-	#drawParticle(_particle) {
+	renderSystem(_system) {
+		let topLeft = this.camera.worldToPxCoord(new Vector(0, 0), _system);
+		let bottomRight = this.camera.worldToPxCoord(_system.size, _system);
+		let delta = topLeft.difference(bottomRight);
+
+		this.ctx.strokeStyle = '#f00';
+		this.ctx.beginPath();
+		this.ctx.strokeRect(topLeft.value[0], topLeft.value[1], delta.value[0], delta.value[1]);
+		this.ctx.closePath();
+		this.ctx.stroke();
+
+		for (let particle of _system.particles) this.#drawParticle(particle, _system);
+	}
+
+
+
+
+	#drawParticle(_particle, _system) {
 		const pxRadius = _particle.radius * this.camera.getPxToWorldScalar();
-		let pos = this.camera.worldToPxCoord(_particle.position);
+		let pos = this.camera.worldToPxCoord(_particle.position, _system);
 		// this.ctx.fillStyle = '#555';
 		let log = Math.log(_particle.velocity.getSquaredLength());
 		this.ctx.fillStyle = 'rgb(' + (log * 15) + ', ' + (255 - log * 15) + ', ' + (_particle.radius / 4 * 255) + ')';
@@ -49,6 +64,8 @@ class _Renderer
 		if (!this.settings.showForces) return;
 		this.drawVector({start: _particle.position, delta: _particle.velocity, color: '#f00'});
 	}
+
+
 
 	drawVector({start, delta, color = '#f00'}) {
 		let posA = this.camera.worldToPxCoord(start);
@@ -69,31 +86,39 @@ class _Renderer
 
 
 
-function _Renderer_camera(_canvas) {
-	let PxToWorld;
-	let WorldToPx;
+class _Renderer_camera {
+	#canvas;
+	#PxToWorld;
+	#WorldToPx;
+	
+	constructor(_canvas) {
+		this.#canvas = _canvas;
+		window.onresize = () => this.onResize();
+	}
+	
+	onResize() {
+		const pxMargin = new Vector(20, 20);
+		this.#canvas.width = this.#canvas.offsetWidth;
+		this.#canvas.height = this.#canvas.offsetHeight;
 
-	window.onresize = function() {
-		_canvas.width = _canvas.offsetWidth;
-		_canvas.height = _canvas.offsetHeight;
-		PxToWorld = _canvas.width / World.size.value[0];
-		WorldToPx = 1 / PxToWorld;
-		World.size.value[1] = WorldToPx * _canvas.height;
 
-		// World.grid = new WorldGrid();
+		this.#PxToWorld = this.#canvas.height / World.size.value[1];
+		this.#WorldToPx = 1 / this.#PxToWorld;
+		World.size.value[0] = this.#WorldToPx * this.#canvas.width;
+
+		World.systems[0].position = World.size.copy().add(World.systems[0].size.copy().scale(-1)).scale(.5);
+		World.systems[0].position.value[0] = 10;
+		World.systems[1].position = World.systems[0].position.copy().add(new Vector(110, 0));
 	}
 
-
-
-	this.getPxToWorldScalar = function() {
-		return PxToWorld;
+	getPxToWorldScalar() {
+		return this.#PxToWorld;
 	}
 
-	this.worldToPxCoord = function(_coord) {
-		return _coord.copy().scale(PxToWorld);
+	worldToPxCoord(_coord, _system) {
+		return _coord.copy().add(_system.position).scale(this.#PxToWorld)
 	}
-	this.pxToWorldCoord = function(_coord) {
-		return _coord.copy().scale(WorldToPx);
+	pxToWorldCoord(_coord, _system) {
+		return _coord.copy().scale(this.#WorldToPx).add(_system.position.copy().scale(-1));
 	}
-
 }

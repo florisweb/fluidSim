@@ -1,4 +1,5 @@
 class PhysicsEntity {
+	#System;
 	position = new Vector(0, 0);
 	prevDeltaPos = new Vector(0, 0);
 	lastDt = 1;
@@ -12,8 +13,13 @@ class PhysicsEntity {
 		return this.prevDeltaPos.copy().scale(1 / this.lastDt);
 	}
 
-	constructor({position}) {
-		this.position = position || new Vector(Math.random() * World.size.value[0], Math.random() * World.size.value[1]);
+	setSystem(_system) {
+		this.#System = _system;
+	}
+
+	constructor({position}, _system) {
+		this.#System = _system;
+		this.position = position;
 	}
 
 
@@ -31,22 +37,22 @@ class PhysicsEntity {
 		if (isNaN(this.position.value[0])) debugger;
 		
 		// Check for te worlds boundaries
-		if (this.position.value[0] > World.size.value[0]) 
+		if (this.position.value[0] > this.#System.size.value[0]) 
 		{
 			let antiVelocityForce = -Math.abs(this.velocity.value[0]) * this.mass / _dt;
 			this.applyForce(new Vector(antiVelocityForce * (1 + Physics.restitution), 0));
-			this.position.value[0] = World.size.value[0];
+			this.position.value[0] = this.#System.size.value[0];
 		} else if (this.position.value[0] < 0) 
 		{
 			let antiVelocityForce = Math.abs(this.velocity.value[0]) * this.mass / _dt;
 			this.applyForce(new Vector(antiVelocityForce * (1 + Physics.restitution), 0));
 			this.position.value[0] = 0;
 		}
-		if (this.position.value[1] > World.size.value[1]) 
+		if (this.position.value[1] > this.#System.size.value[1]) 
 		{
 			let antiVelocityForce = -Math.abs(this.velocity.value[1]) * this.mass / _dt;
 			this.applyForce(new Vector(0, antiVelocityForce * (1 + Physics.restitution)));
-			this.position.value[1] = World.size.value[1];
+			this.position.value[1] = this.#System.size.value[1];
 		} else if (this.position.value[1] < 0) 
 		{
 			let antiVelocityForce = Math.abs(this.velocity.value[1]) * this.mass / _dt;
@@ -67,8 +73,8 @@ class Particle extends PhysicsEntity {
 	radius = 3;
 	mass;
 
-	constructor({position, radius}) {
-		super({position: position});
+	constructor({position, radius}, _system) {
+		super({position: position}, _system);
 		this.radius = radius || 3;
 		this.mass = this.radius**3 * 4 / 3 * Math.PI;
 	}

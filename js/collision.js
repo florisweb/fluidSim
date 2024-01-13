@@ -1,7 +1,6 @@
 
 
 class _CollisionDetector {
-
 	resolveCollisions(_dt) {
 		let curUpdate = Math.random() * 1000000;
 		let checked = 0;
@@ -30,10 +29,10 @@ class _CollisionDetector {
 		// }
 	}
 
-	resolveNeighbourCollisions(_dt) {
-		for (let particle of World.particles) particle.resolved = false;
+	resolveNeighbourCollisions(_system, _dt) {
+		for (let particle of _system.particles) particle.resolved = false;
 
-		for (let particle of World.particles)
+		for (let particle of _system.particles)
 		{
 			for (let other of particle.neighbours)
 			{
@@ -45,15 +44,15 @@ class _CollisionDetector {
 	}
 
 
-	updateNeighbourTable(_rangeSquared) {
-		for (let particle of World.particles) particle.neighbours = [];
+	updateNeighbourTable(_system, _rangeSquared) {
+		for (let particle of _system.particles) particle.neighbours = [];
 
-		for (let p1 = 0; p1 < World.particles.length; p1++) 
+		for (let p1 = 0; p1 < _system.particles.length; p1++) 
 		{
-			for (let p2 = p1 + 1; p2 < World.particles.length; p2++) 
+			for (let p2 = p1 + 1; p2 < _system.particles.length; p2++) 
 			{
-				let particle1 = World.particles[p1];
-				let particle2 = World.particles[p2];
+				let particle1 = _system.particles[p1];
+				let particle2 = _system.particles[p2];
 				let delta = particle1.position.difference(particle2.position);
 				let distanceSq = delta.getSquaredLength();
 				if (distanceSq > _rangeSquared) continue;
