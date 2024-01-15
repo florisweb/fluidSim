@@ -103,8 +103,12 @@
 
 			<label id='energyLabel'>Energy:</label><br>
 			<br>
-			<input type='checkbox' id='showForcesEnabled' onclick="Renderer.settings.showForces = this.checked">
-			<label for="showForcesEnabled">Show forces</label><br>
+			<input type='checkbox' id='gravityEnabled' onclick="World.systems[0].config.gravity = this.checked">
+			<label for="gravityEnabled">Gravity</label><br>
+			<input type='checkbox' id='wrapParticles' onclick="World.systems[0].config.wrapParticles = this.checked">
+			<label for="wrapParticles">Wrap Particles</label><br>
+			<input type='checkbox' checked='true' id='running' onclick="World.systems[0].running = this.checked">
+			<label for="running">Running</label><br>
 		</div>
 		<canvas id="worldCanvas" width="600" height="600"></canvas>
 

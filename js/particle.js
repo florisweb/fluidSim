@@ -1,5 +1,5 @@
 class PhysicsEntity {
-	#System;
+	System;
 	position = new Vector(0, 0);
 	prevDeltaPos = new Vector(0, 0);
 	lastDt = 1;
@@ -14,11 +14,11 @@ class PhysicsEntity {
 	}
 
 	setSystem(_system) {
-		this.#System = _system;
+		this.System = _system;
 	}
 
 	constructor({position}, _system) {
-		this.#System = _system;
+		this.System = _system;
 		this.position = position;
 	}
 
@@ -37,22 +37,40 @@ class PhysicsEntity {
 		if (isNaN(this.position.value[0])) debugger;
 		
 		// Check for te worlds boundaries
-		if (this.position.value[0] + this.radius > this.#System.size.value[0]) 
+		if (this.System.config.wrapParticles)
+		{
+			if (this.position.value[0] > this.System.size.value[0]) 
+			{
+				this.position.value[0] = 0;
+			} else if (this.position.value[0] < 0) 
+			{
+				this.position.value[0] = this.System.size.value[0];
+			}
+			if (this.position.value[1] > this.System.size.value[1]) 
+			{
+				this.position.value[1] = 0;
+			} else if (this.position.value[1] < 0) 
+			{
+				this.position.value[1] = this.System.size.value[1];
+			}
+			return;
+		}
+		if (this.position.value[0] + this.radius > this.System.size.value[0]) 
 		{
 			let antiVelocityForce = -Math.abs(this.velocity.value[0]) * this.mass / _dt;
 			this.applyForce(new Vector(antiVelocityForce * (1 + Physics.restitution), 0));
-			this.position.value[0] = this.#System.size.value[0] - this.radius;
+			this.position.value[0] = this.System.size.value[0] - this.radius;
 		} else if (this.position.value[0] - this.radius < 0) 
 		{
 			let antiVelocityForce = Math.abs(this.velocity.value[0]) * this.mass / _dt;
 			this.applyForce(new Vector(antiVelocityForce * (1 + Physics.restitution), 0));
 			this.position.value[0] = this.radius;
 		}
-		if (this.position.value[1] + this.radius > this.#System.size.value[1]) 
+		if (this.position.value[1] + this.radius > this.System.size.value[1]) 
 		{
 			let antiVelocityForce = -Math.abs(this.velocity.value[1]) * this.mass / _dt;
 			this.applyForce(new Vector(0, antiVelocityForce * (1 + Physics.restitution)));
-			this.position.value[1] = this.#System.size.value[1] - this.radius;
+			this.position.value[1] = this.System.size.value[1] - this.radius;
 		} else if (this.position.value[1] - this.radius < 0) 
 		{
 			let antiVelocityForce = Math.abs(this.velocity.value[1]) * this.mass / _dt;
@@ -80,7 +98,7 @@ class Particle extends PhysicsEntity {
 	}
 
 	update(_dt) {
-		this.applyForce(new Vector(0, Physics.g * this.mass));
+		if (this.System.config.gravity) this.applyForce(new Vector(0, Physics.g * this.mass));
 		super.update(_dt);
 	}
 }

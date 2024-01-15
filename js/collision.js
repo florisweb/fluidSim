@@ -79,8 +79,7 @@ class _CollisionDetector {
 		let dPos = _particle1.position.difference(_particle2.position);
 		let length = dPos.getLength();
 		if (length === 0) {
-			const errorMargin = 0.01;
-			dPos = new Vector(errorMargin - 2 * errorMargin * Math.random(), errorMargin - 2 * errorMargin * Math.random());
+			dPos = new Vector(0.00001, 0);
 			length = dPos.getLength();
 		}
 		
