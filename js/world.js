@@ -6,7 +6,7 @@ const CollisionDetector = new _CollisionDetector();
 const World = new class {
 	size = new Vector(150, 120);
 	systems = [
-		new System({size: new Vector(50, 100), name: 'Big System'}),
+		new System({size: new Vector(100, 100), name: 'Big System'}),
 		// new System({size: new Vector(50, 100),  name: 'Small System'})
 	];
 
@@ -20,11 +20,63 @@ const World = new class {
 
 
 
+// Bugs: 
+// - creates energy upon bouncing with wall AND other particle
+// - creates energy upon bouncing with itself? (three particles at once)
 
 
-// World.systems[1].addParticle(new Particle({position: new Vector(50, 170), radius: 3}));
-// World.systems[0].addParticle(new Particle({position: new Vector(50, 50), radius: 5}));
-// World.systems[1].particles[1].applyForce(new Vector(-10000000, -10000000));
+// for (let x = 0; x < World.systems[0].size.value[0]; x += 15) 
+// {
+	// World.systems[0].addParticle(new Particle({position: new Vector(x + 5, 50), radius: 3}));
+	// World.systems[0].addParticle(new Particle({position: new Vector(70, 50), radius: 5}));
+	// World.systems[0].addParticle(new Particle({position: new Vector(90, 50), radius: 7}));
+// }
+
+
+
+// 3 particle collision
+// let p1 = new Particle({position: new Vector(10, 50), radius: 3});
+// let p2 = new Particle({position: new Vector(50, 50), radius: 3});
+// let p3 = new Particle({position: new Vector(50, 10), radius: 3});
+// p3.applyForce(new Vector(0, 1000000));
+// p1.applyForce(new Vector(1000000, 0));
+
+// World.systems[0].addParticle(p1);
+// World.systems[0].addParticle(p3);
+// World.systems[0].addParticle(p2);
+
+
+// let p1 = new Particle({position: new Vector(10, 50), radius: 3});
+// let p2 = new Particle({position: new Vector(50, 50), radius: 3});
+// let p3 = new Particle({position: new Vector(50, 10), radius: 3});
+// let p4 = new Particle({position: new Vector(50, 90), radius: 3});
+
+// p3.applyForce(new Vector(0, 1000000));
+// p4.applyForce(new Vector(0, -1000000));
+// p1.applyForce(new Vector(1000000, 0));
+
+
+// World.systems[0].addParticle(p1);
+// World.systems[0].addParticle(p2);
+// World.systems[0].addParticle(p3);
+// World.systems[0].addParticle(p4);
+
+
+
+
+
+// World.systems[0].addParticle(new Particle({position: new Vector(20, 20), radius: 3}));
+// World.systems[0].addParticle(new Particle({position: new Vector(50, 50), radius: 3}));
+// World.systems[0].particles[0].applyForce(new Vector(1000000, 1000000));
+
+
+
+
+
+
+// World.systems[0].particles[2].applyForce(new Vector(-100000000, 0));
+
+setTimeout(() => World.systems[0].temperature = 1000, 10);
 
 for (let x = 0; x < World.systems[0].size.value[0]; x += 5) 
 {

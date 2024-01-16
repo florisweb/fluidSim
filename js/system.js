@@ -76,7 +76,7 @@ class System {
 
 		CollisionDetector.resolveNeighbourCollisions(this, this.config.dt);
 
-		for (let particle of this.particles) particle.update(this.config.dt);
+		// for (let particle of this.particles) particle.update(this.config.dt);
 
 
 		if (this.updates % 10 !== 0) return;
