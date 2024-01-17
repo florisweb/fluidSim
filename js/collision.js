@@ -74,7 +74,6 @@ class _CollisionDetector {
 			set.Ekin = set.particles.map((p) => p.mass * p.velocity.getSquaredLength()).reduce((a, b) => a + b, 0);
 		}
 
-		if (collisionSets.length) {console.log(collisionSets)}
 
 		for (let collision of collisions) this.resolveCollision(collision, _dt);
 		for (let particle of _system.particles) particle.update(_dt);

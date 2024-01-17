@@ -57,6 +57,9 @@ class System {
 		return this.setTemperature(_newTemp);
 	}
 
+	pressure = 0;
+	
+
 
 	setup() {
 		this.update();
@@ -69,8 +72,7 @@ class System {
 	}
 
 
-	wallBounces = [];
-
+	appliedWallForce = 0;
 	step() {
 		this.updates++;
 
@@ -83,18 +85,29 @@ class System {
 		CollisionDetector.updateNeighbourTable(this, this.#updateNeighbourRange**2);
 		this.updateMetaData();
 
+		const pressureUpdateAveragingCount = 100;
+		if (this.updates % pressureUpdateAveragingCount !== 0) return;
+		this.pressure = this.appliedWallForce / (this.size.value[0] * 2 + this.size.value[1] * 2) / pressureUpdateAveragingCount;
+		this.appliedWallForce = 0;
+
 	}
 
 	updateMetaData() {
-		let totalEnergy = this.totalEkin / this.particles.length;
-		let base = Math.max(Math.floor(Math.min(Math.log10(totalEnergy) - 2, 12) / 3) * 3, 0);
 		const units = ['', 'k', 'M', 'G', 'T'];
-		let value = Math.round(totalEnergy / 10**base);
 
+		let Ekin = this.totalEkin / this.particles.length;
+		let EKinBase = Math.max(Math.floor(Math.min(Math.log10(Ekin) - 2, 12) / 3) * 3, 0);
+		let EkinValue = Math.round(Ekin / 10**EKinBase);
 
-		energyLabel.innerHTML = `Ekin: ` + value + units[base / 3] + `J<br>` + 
+		let E = this.totalEnergy / this.particles.length;
+		let EBase = Math.max(Math.floor(Math.min(Math.log10(E) - 2, 12) / 3) * 3, 0);
+		let EValue = Math.round(E / 10**EBase);
+
+		energyLabel.innerHTML = `Energy: ` + EValue + units[EBase / 3] + `J<br>` + 
+								`Ekin: ` + EkinValue + units[EKinBase / 3] + `J<br>` + 
 								'Velocity: ' + Math.round(this.averageVelocity * 100) / 100 + 'm/s<br>' + 
-								'Temp: ' + Math.round(Physics.EkinToTemp(totalEnergy) * 100) / 100 + 'K';
+								'Temp: ' + Math.round(Physics.EkinToTemp(Ekin) * 100) / 100 + 'K<br>' +
+								'Pressure: ' + Math.round(this.pressure * 100) / 100 + 'Pa';
 	}
 
 

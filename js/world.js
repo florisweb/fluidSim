@@ -76,15 +76,15 @@ const World = new class {
 
 // World.systems[0].particles[2].applyForce(new Vector(-100000000, 0));
 
-setTimeout(() => World.systems[0].temperature = 1000, 10);
+setTimeout(() => World.systems[0].temperature = 10, 10);
 
 for (let x = 0; x < World.systems[0].size.value[0]; x += 5) 
 {
 	for (let y = 0; y < 50; y += 5) 
 	{
 		// World.systems[0].addParticle(new Particle({position: new Vector(x + 0, y), radius: .5}));
-		World.systems[0].addParticle(new Particle({position: new Vector(x + 0, y), radius: 1}));
-		const m = 10000;
+		World.systems[0].addParticle(new Particle({position: new Vector(x + 0, y), radius: .5}));
+		const m = 100;
 		World.systems[0].particles[World.systems[0].particles.length - 1].applyForce(new Vector(m - 2 * m * Math.random(), m - 2 * m * Math.random()));
 	}
 }

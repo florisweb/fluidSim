@@ -52,23 +52,35 @@ class PhysicsEntity {
 			if (this.position.value[0] + this.radius > this.System.size.value[0]) 
 			{
 				let antiVelocityForce = -Math.abs(this.velocity.value[0]) * this.mass / _dt;
-				this.applyForce(new Vector(antiVelocityForce * (1 + Physics.restitution), 0));
+				let force = antiVelocityForce * (1 + Physics.restitution);
+				this.System.appliedWallForce -= force;
+				
+				this.applyForce(new Vector(force, 0));
 				this.position.value[0] = this.System.size.value[0] - this.radius;
 			} else if (this.position.value[0] - this.radius < 0) 
 			{
 				let antiVelocityForce = Math.abs(this.velocity.value[0]) * this.mass / _dt;
-				this.applyForce(new Vector(antiVelocityForce * (1 + Physics.restitution), 0));
+				let force = antiVelocityForce * (1 + Physics.restitution);
+				this.System.appliedWallForce += force;
+
+				this.applyForce(new Vector(force, 0));
 				this.position.value[0] = this.radius;
 			}
 			if (this.position.value[1] + this.radius > this.System.size.value[1]) 
 			{
 				let antiVelocityForce = -Math.abs(this.velocity.value[1]) * this.mass / _dt;
-				this.applyForce(new Vector(0, antiVelocityForce * (1 + Physics.restitution)));
+				let force = antiVelocityForce * (1 + Physics.restitution);
+				this.System.appliedWallForce -= force;
+
+				this.applyForce(new Vector(0, force));
 				this.position.value[1] = this.System.size.value[1] - this.radius;
 			} else if (this.position.value[1] - this.radius < 0) 
 			{
 				let antiVelocityForce = Math.abs(this.velocity.value[1]) * this.mass / _dt;
-				this.applyForce(new Vector(0, antiVelocityForce * (1 + Physics.restitution)));
+				let force = antiVelocityForce * (1 + Physics.restitution);
+				this.System.appliedWallForce += force;
+
+				this.applyForce(new Vector(0, force));
 				this.position.value[1] = this.radius;
 			}
 		}
